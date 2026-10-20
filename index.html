@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Arrivin · Teste de 1 minuto</title>
+<meta name="description" content="Ajude a escolher a frase do site do Arrivin. Leva 1 minuto.">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="Me ajuda em 1 minuto?">
+<meta property="og:description" content="Você vê o topo de um site por 5 segundos e conta o que entendeu.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%20role%3D%22img%22%20aria-label%3D%22Arrivin%22%20%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2215%22%20fill%3D%22%23102F38%22/%3E%3Cg%20transform%3D%22translate%286%206%29%20scale%28.8%29%22%3E%3Cpath%20d%3D%22M9%2057V31C9%2017.2%2020.2%206%2034%206S59%2017.2%2059%2031V57%22%20fill%3D%22none%22%20stroke%3D%22%2347C6B1%22%20stroke-width%3D%228%22/%3E%3Ccircle%20cx%3D%2239.5%22%20cy%3D%2243.5%22%20r%3D%227.5%22%20fill%3D%22%23F5F3EB%22/%3E%3C/g%3E%3C/svg%3E%0A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap">
+<style>
+/* Layout: uma tela por vez, centrada no celular; o topo testado imita a primeira dobra do site. */
+:root{
+  --ink:#102F38; --mint:#47C6B1; --sand:#F5F3EB; --teal:#0F7A6B;
+  --bg:#F5F3EB; --fg:#102F38; --muted:#4F6870; --line:#D9D5C7; --card:#FFFFFF;
+  --font:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{--bg:#0B2128;--fg:#F5F3EB;--muted:#A9BCC0;--line:#24434C;--card:#12313A;--teal:#47C6B1;color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--fg);font:16px/1.5 var(--font);
+  padding:max(20px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+main{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.brand{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px}
+.brand svg{height:28px;width:auto;display:block}
+.lr{display:none}
+@media (prefers-color-scheme:dark){.lp{display:none}.lr{display:block}}
+h1{font-size:26px;line-height:1.2;margin:0;text-wrap:balance}
+p{margin:0}
+.muted{color:var(--muted)}
+.steps{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.steps li{display:flex;gap:12px;align-items:flex-start}
+.steps b{flex:0 0 28px;height:28px;border-radius:50%;background:var(--mint);color:var(--ink);display:grid;place-items:center;font-size:14px}
+.choices{display:grid;gap:10px}
+.choice{display:block;width:100%;text-align:left;padding:14px 16px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--fg);font:600 16px/1.3 var(--font);cursor:pointer}
+.choice small{display:block;font-weight:400;color:var(--muted);margin-top:2px;font-size:14px}
+.choice:active{border-color:var(--teal)}
+.choice:disabled{opacity:.5}
+.btn{appearance:none;border:0;border-radius:12px;background:var(--ink);color:var(--sand);font:700 17px/1 var(--font);padding:17px 20px;cursor:pointer;width:100%}
+@media (prefers-color-scheme:dark){.btn{background:var(--mint);color:var(--ink)}}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.choice:focus-visible,textarea:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+textarea{width:100%;min-height:120px;padding:14px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--fg);font:16px/1.45 var(--font);resize:vertical}
+.tag{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--teal)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.err{color:#B3261E;font-size:14px}
+@media (prefers-color-scheme:dark){.err{color:#FFB4AB}}
+/* Topo testado: sempre com as cores do site */
+.hero{position:fixed;inset:0;background:#102F38;color:#F5F3EB;z-index:20;display:flex;flex-direction:column;
+  padding:max(22px,env(safe-area-inset-top)) max(22px,env(safe-area-inset-right)) max(28px,env(safe-area-inset-bottom)) max(22px,env(safe-area-inset-left))}
+.hero-in{max-width:760px;width:100%;margin:0 auto;flex:1;display:flex;flex-direction:column}
+.hero-nav{display:flex;justify-content:space-between;align-items:center;font-size:14px;color:rgba(245,243,235,.7)}
+.hero-nav svg{height:32px;width:auto}
+.hero-body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:28px}
+.hero h2{margin:0;font-size:clamp(30px,8.4vw,54px);line-height:1.1;font-weight:700;letter-spacing:-.015em;text-wrap:balance}
+.hero .cta{align-self:flex-start;background:#47C6B1;color:#102F38;font-weight:700;border-radius:12px;padding:15px 22px;font-size:17px}
+.bar{height:4px;border-radius:2px;background:rgba(245,243,235,.18);overflow:hidden}
+.bar i{display:block;height:100%;width:100%;background:#47C6B1;transform-origin:left;transform:scaleX(1)}
+.bar.go i{transition:transform 5s linear;transform:scaleX(0)}
+@media (prefers-reduced-motion:reduce){.bar.go i{transition:none}}
+.count{font-size:13px;color:rgba(245,243,235,.6);margin-top:8px;text-align:center}
+</style>
+</head>
+<body>
+<main id="app" aria-live="polite">
+  <div class="brand"><span class="lp"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 64" role="img" focusable="false" aria-label="Arrivin" ><path d="M9 57V31C9 17.2 20.2 6 34 6S59 17.2 59 31V57" fill="none" stroke="#0F766B" stroke-width="8"/><circle cx="39.5" cy="43.5" r="7.5" fill="#102F38"/><g transform="translate(72.450916667 50.436000000) scale(0.047 -0.047)"><path d="M226 -12Q169 -12 126.75 7.125Q84.5 26.25 61.5 61.375Q38.5 96.5 38.5 144.25Q38.5 189.25 58.75 224.5Q79 259.75 121.125 283.75Q163.25 307.75 226.75 317.75L404.5 346.75V247.25L251.5 220.5Q213 213.5 193.875 195.875Q174.75 178.25 174.75 148.75Q174.75 121 196.125 104.25Q217.5 87.5 249.75 87.5Q291.25 87.5 322.5 105.375Q353.75 123.25 371.125 153.875Q388.5 184.5 388.5 221.5V362Q388.5 397.25 361.375 420.5Q334.25 443.75 288.75 443.75Q246.5 443.75 214.375 421.125Q182.25 398.5 167.25 361.75L60.25 413.75Q76 456.75 110.375 488.5Q144.75 520.25 192.0 537.875Q239.25 555.5 294 555.5Q360.5 555.5 411.625 531.0Q462.75 506.5 491.25 463.0Q519.75 419.5 519.75 362V0H396V92.75L424.25 94.5Q402.75 60 373.625 36.25Q344.5 12.5 307.625 0.25Q270.75 -12 226 -12Z" transform="translate(0 0)" fill="#102F38"/><path d="M60.5 0V543.5H184.25V423.25L174.25 440.75Q192.5 502 233.25 525.875Q274 549.75 330.5 549.75H363V433.5H316Q260.25 433.5 226.0 399.375Q191.75 365.25 191.75 303V0Z" transform="translate(540 0)" fill="#102F38"/><path d="M60.5 0V543.5H184.25V423.25L174.25 440.75Q192.5 502 233.25 525.875Q274 549.75 330.5 549.75H363V433.5H316Q260.25 433.5 226.0 399.375Q191.75 365.25 191.75 303V0Z" transform="translate(874 0)" fill="#102F38"/><path d="M60.5 0V543.5H191.75V0ZM60.5 605V745H191.75V605Z" transform="translate(1208 0)" fill="#102F38"/><path d="M224.5 0 11 543.5H153.5L309.25 116.25H256L412 543.5H554.75L340.75 0Z" transform="translate(1420 0)" fill="#102F38"/><path d="M60.5 0V543.5H191.75V0ZM60.5 605V745H191.75V605Z" transform="translate(1946 0)" fill="#0F766B"/><path d="M60.5 0V543.5H184.25V436.5L174 455.5Q193.25 505.25 236.5 530.375Q279.75 555.5 337.5 555.5Q398.25 555.5 444.5 529.5Q490.75 503.5 516.875 457.25Q543 411 543 350.0232558139535V0H411.75V319Q411.75 355.25 398.0 381.0Q384.25 406.75 359.4301724137931 421.125Q334.61034482758623 435.5 302.3051724137931 435.5Q270 435.5 244.75 421.125Q219.5 406.75 205.625 380.875Q191.75 355 191.75 319V0Z" transform="translate(2158 0)" fill="#0F766B"/></g></svg>
+</span><span class="lr"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 64" role="img" aria-label="Arrivin" ><path d="M9 57V31C9 17.2 20.2 6 34 6S59 17.2 59 31V57" fill="none" stroke="#47C6B1" stroke-width="8"/><circle cx="39.5" cy="43.5" r="7.5" fill="#F5F3EB"/><g transform="translate(72.450916667 50.436000000) scale(0.047 -0.047)"><path d="M226 -12Q169 -12 126.75 7.125Q84.5 26.25 61.5 61.375Q38.5 96.5 38.5 144.25Q38.5 189.25 58.75 224.5Q79 259.75 121.125 283.75Q163.25 307.75 226.75 317.75L404.5 346.75V247.25L251.5 220.5Q213 213.5 193.875 195.875Q174.75 178.25 174.75 148.75Q174.75 121 196.125 104.25Q217.5 87.5 249.75 87.5Q291.25 87.5 322.5 105.375Q353.75 123.25 371.125 153.875Q388.5 184.5 388.5 221.5V362Q388.5 397.25 361.375 420.5Q334.25 443.75 288.75 443.75Q246.5 443.75 214.375 421.125Q182.25 398.5 167.25 361.75L60.25 413.75Q76 456.75 110.375 488.5Q144.75 520.25 192.0 537.875Q239.25 555.5 294 555.5Q360.5 555.5 411.625 531.0Q462.75 506.5 491.25 463.0Q519.75 419.5 519.75 362V0H396V92.75L424.25 94.5Q402.75 60 373.625 36.25Q344.5 12.5 307.625 0.25Q270.75 -12 226 -12Z" transform="translate(0 0)" fill="#F5F3EB"/><path d="M60.5 0V543.5H184.25V423.25L174.25 440.75Q192.5 502 233.25 525.875Q274 549.75 330.5 549.75H363V433.5H316Q260.25 433.5 226.0 399.375Q191.75 365.25 191.75 303V0Z" transform="translate(540 0)" fill="#F5F3EB"/><path d="M60.5 0V543.5H184.25V423.25L174.25 440.75Q192.5 502 233.25 525.875Q274 549.75 330.5 549.75H363V433.5H316Q260.25 433.5 226.0 399.375Q191.75 365.25 191.75 303V0Z" transform="translate(874 0)" fill="#F5F3EB"/><path d="M60.5 0V543.5H191.75V0ZM60.5 605V745H191.75V605Z" transform="translate(1208 0)" fill="#F5F3EB"/><path d="M224.5 0 11 543.5H153.5L309.25 116.25H256L412 543.5H554.75L340.75 0Z" transform="translate(1420 0)" fill="#F5F3EB"/><path d="M60.5 0V543.5H191.75V0ZM60.5 605V745H191.75V605Z" transform="translate(1946 0)" fill="#47C6B1"/><path d="M60.5 0V543.5H184.25V436.5L174 455.5Q193.25 505.25 236.5 530.375Q279.75 555.5 337.5 555.5Q398.25 555.5 444.5 529.5Q490.75 503.5 516.875 457.25Q543 411 543 350.0232558139535V0H411.75V319Q411.75 355.25 398.0 381.0Q384.25 406.75 359.4301724137931 421.125Q334.61034482758623 435.5 302.3051724137931 435.5Q270 435.5 244.75 421.125Q219.5 406.75 205.625 380.875Q191.75 355 191.75 319V0Z" transform="translate(2158 0)" fill="#47C6B1"/></g></svg>
+</span><span>Pesquisa rápida</span></div>
+
+  <section id="s-intro">
+    <div style="display:grid;gap:16px">
+      <h1>Me ajuda em 1 minuto?</h1>
+      <p class="muted">Uma frase aparece por 5 segundos. Depois, conte o que entendeu.</p>
+      <p style="font-weight:600;margin-top:4px">Você é:</p>
+      <div class="choices" role="group" aria-label="Seu perfil">
+        <button type="button" class="choice" data-perfil="anfitriao" disabled>Anfitrião ou gestora de imóveis</button>
+        <button type="button" class="choice" data-perfil="portaria" disabled>Portaria ou síndico</button>
+        <button type="button" class="choice" data-perfil="fora" disabled>Não trabalho com isso</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="s-ask" hidden>
+    <form id="f-ask" style="display:grid;gap:16px" novalidate>
+      <span class="tag" id="ask-tag">Frase 1 de 2</span>
+      <h1 id="ask-title">O que esse site faz? Para quem é?</h1>
+            <label for="t-resp" class="hp">Sua resposta</label>
+      <textarea id="t-resp" maxlength="600" placeholder="Do seu jeito, em poucas palavras" required></textarea>
+      <div class="hp" aria-hidden="true"><label for="t-site">Site</label><input id="t-site" tabindex="-1" autocomplete="off"></div>
+      <p class="err" id="ask-err" hidden></p>
+      <button class="btn" id="b-send" type="submit">Enviar resposta</button>
+    </form>
+  </section>
+
+  <section id="s-mid" hidden>
+    <div style="display:grid;gap:16px">
+      <h1>Obrigado! Agora a segunda.</h1>
+      <button class="btn" id="b-next">Ver a segunda frase</button>
+    </div>
+  </section>
+
+  <section id="s-end" hidden>
+    <div style="display:grid;gap:18px">
+      <span class="tag">Concluído</span>
+      <h1>Muito obrigado!</h1>
+      <p class="muted">Se puder, mande para mais alguém.</p>
+      <a class="btn" id="b-share" style="text-align:center;text-decoration:none" target="_blank" rel="noopener">Enviar o link pelo WhatsApp</a>
+    </div>
+  </section>
+
+  <section id="s-closed" hidden>
+    <div style="display:grid;gap:18px">
+      <h1>Esta pesquisa já foi encerrada.</h1>
+      <p class="muted">Obrigado pelo interesse! Já recebemos as respostas de que precisávamos.</p>
+    </div>
+  </section>
+
+  <section id="s-fail" hidden>
+    <div style="display:grid;gap:18px">
+      <h1>Não conseguimos carregar a pesquisa.</h1>
+      <p class="muted">Confira sua internet e tente de novo.</p>
+      <button class="btn" onclick="location.reload()">Tentar de novo</button>
+    </div>
+  </section>
+</main>
+
+<div class="hero" id="hero" hidden aria-hidden="true">
+  <div class="hero-in">
+    <div class="hero-nav"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 64" role="img" focusable="false" aria-label="Arrivin" ><path d="M9 57V31C9 17.2 20.2 6 34 6S59 17.2 59 31V57" fill="none" stroke="#47C6B1" stroke-width="8"/><circle cx="39.5" cy="43.5" r="7.5" fill="#F5F3EB"/><g transform="translate(72.450916667 50.436000000) scale(0.047 -0.047)"><path d="M226 -12Q169 -12 126.75 7.125Q84.5 26.25 61.5 61.375Q38.5 96.5 38.5 144.25Q38.5 189.25 58.75 224.5Q79 259.75 121.125 283.75Q163.25 307.75 226.75 317.75L404.5 346.75V247.25L251.5 220.5Q213 213.5 193.875 195.875Q174.75 178.25 174.75 148.75Q174.75 121 196.125 104.25Q217.5 87.5 249.75 87.5Q291.25 87.5 322.5 105.375Q353.75 123.25 371.125 153.875Q388.5 184.5 388.5 221.5V362Q388.5 397.25 361.375 420.5Q334.25 443.75 288.75 443.75Q246.5 443.75 214.375 421.125Q182.25 398.5 167.25 361.75L60.25 413.75Q76 456.75 110.375 488.5Q144.75 520.25 192.0 537.875Q239.25 555.5 294 555.5Q360.5 555.5 411.625 531.0Q462.75 506.5 491.25 463.0Q519.75 419.5 519.75 362V0H396V92.75L424.25 94.5Q402.75 60 373.625 36.25Q344.5 12.5 307.625 0.25Q270.75 -12 226 -12Z" transform="translate(0 0)" fill="#F5F3EB"/><path d="M60.5 0V543.5H184.25V423.25L174.25 440.75Q192.5 502 233.25 525.875Q274 549.75 330.5 549.75H363V433.5H316Q260.25 433.5 226.0 399.375Q191.75 365.25 191.75 303V0Z" transform="translate(540 0)" fill="#F5F3EB"/><path d="M60.5 0V543.5H184.25V423.25L174.25 440.75Q192.5 502 233.25 525.875Q274 549.75 330.5 549.75H363V433.5H316Q260.25 433.5 226.0 399.375Q191.75 365.25 191.75 303V0Z" transform="translate(874 0)" fill="#F5F3EB"/><path d="M60.5 0V543.5H191.75V0ZM60.5 605V745H191.75V605Z" transform="translate(1208 0)" fill="#F5F3EB"/><path d="M224.5 0 11 543.5H153.5L309.25 116.25H256L412 543.5H554.75L340.75 0Z" transform="translate(1420 0)" fill="#F5F3EB"/><path d="M60.5 0V543.5H191.75V0ZM60.5 605V745H191.75V605Z" transform="translate(1946 0)" fill="#47C6B1"/><path d="M60.5 0V543.5H184.25V436.5L174 455.5Q193.25 505.25 236.5 530.375Q279.75 555.5 337.5 555.5Q398.25 555.5 444.5 529.5Q490.75 503.5 516.875 457.25Q543 411 543 350.0232558139535V0H411.75V319Q411.75 355.25 398.0 381.0Q384.25 406.75 359.4301724137931 421.125Q334.61034482758623 435.5 302.3051724137931 435.5Q270 435.5 244.75 421.125Q219.5 406.75 205.625 380.875Q191.75 355 191.75 319V0Z" transform="translate(2158 0)" fill="#47C6B1"/></g></svg>
+<span>Planos · Parceiros · Entrar</span></div>
+    <div class="hero-body">
+      <h2 id="hero-h"></h2>
+      <span class="cta">Testar grátis por 14 dias</span>
+    </div>
+    <div><div class="bar" id="bar"><i></i></div><p class="count" id="count">5 segundos</p></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const API = "https://tykpjrwnqlltzrmkpjva.supabase.co/functions/v1/teste-frases";
+  const TEXTOS = {
+    B: "Hóspede registrado e conferido antes de chegar, sem você mandar uma mensagem.",
+    C: "Pare de pedir documento pelo WhatsApp. O hóspede se registra sozinho pelo link da reserva.",
+    F: "Sua equipe para de cobrar documento. O hóspede chega com o registro pronto.",
+    H: "Um link na mensagem da reserva. Hóspede registrado, conferido e liberado.",
+    J: "O hóspede chega com o cadastro conferido. Na portaria, é só confirmar e liberar.",
+    K: "10 ou 100 unidades: todo hóspede registrado e conferido antes do check-in.",
+    N: "Documento, rosto e acesso de cada hóspede, conferidos num só lugar.",
+    O: "Check-in de hóspedes sem WhatsApp, sem papel e sem espera."
+  };
+  const via = (new URLSearchParams(location.search).get("v") || "").toLowerCase();
+  const sessao = (crypto.randomUUID ? crypto.randomUUID() : "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)));
+  const $ = id => document.getElementById(id);
+  const telas = ["s-intro","s-ask","s-mid","s-end","s-closed","s-fail"];
+  const mostra = id => { telas.forEach(t => $(t).hidden = t !== id); window.scrollTo(0, 0); };
+  let perfil = null, fila = [], ordem = 0, inicioPergunta = 0;
+
+  async function chama(corpo) {
+    const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo) });
+    const j = await r.json().catch(() => ({}));
+    return { status: r.status, ...j };
+  }
+
+  function sorteia(frases, contagem) {
+    // Duas frases diferentes, priorizando as que têm menos respostas.
+    const embaralhadas = frases.filter(f => TEXTOS[f]).map(f => ({ f, n: (contagem && contagem[f]) || 0, r: Math.random() }));
+    embaralhadas.sort((a, b) => a.n - b.n || a.r - b.r);
+    const duas = embaralhadas.slice(0, 2).map(x => x.f);
+    return Math.random() < 0.5 ? duas : duas.reverse();
+  }
+
+  document.querySelectorAll(".choice").forEach(b => b.addEventListener("click", () => {
+    if (!fila.length) return;
+    perfil = b.dataset.perfil; ordem = 0; mostraFrase();
+  }));
+
+  function mostraFrase() {
+    const f = fila[ordem];
+    $("hero-h").textContent = TEXTOS[f];
+    const hero = $("hero"), bar = $("bar");
+    bar.classList.remove("go"); hero.hidden = false;
+    let s = 5; $("count").textContent = s + " segundos";
+    requestAnimationFrame(() => requestAnimationFrame(() => bar.classList.add("go")));
+    const t = setInterval(() => { s--; $("count").textContent = s > 0 ? s + (s === 1 ? " segundo" : " segundos") : ""; }, 1000);
+    setTimeout(() => {
+      clearInterval(t); hero.hidden = true;
+      $("ask-tag").textContent = "Frase " + (ordem + 1) + " de 2";
+      $("t-resp").value = ""; $("ask-err").hidden = true; $("b-send").disabled = false;
+      mostra("s-ask"); inicioPergunta = Date.now();
+      setTimeout(() => $("t-resp").focus(), 50);
+    }, 5000);
+  }
+
+  $("b-next").addEventListener("click", () => { ordem = 1; mostraFrase(); });
+
+  $("f-ask").addEventListener("submit", async e => {
+    e.preventDefault();
+    const txt = $("t-resp").value.trim();
+    if (txt.length < 2) { $("ask-err").textContent = "Escreva pelo menos uma palavra sobre o que entendeu."; $("ask-err").hidden = false; return; }
+    $("b-send").disabled = true; $("b-send").textContent = "Enviando…";
+    try {
+      const r = await chama({ acao: "resposta", frase: fila[ordem], ordem: ordem + 1, perfil, resposta: txt, via, sessao, tempo_ms: Date.now() - inicioPergunta, site: $("t-site").value });
+      $("b-send").textContent = "Enviar resposta";
+      if (r.status === 410) return mostra("s-closed");
+      if (!r.ok) throw new Error(r.erro || "falha");
+      if (ordem === 0 && fila.length > 1) mostra("s-mid"); else mostra("s-end");
+    } catch (err) {
+      $("b-send").disabled = false; $("b-send").textContent = "Enviar resposta";
+      $("ask-err").textContent = "Não foi possível enviar. Confira sua internet e toque em Enviar de novo.";
+      $("ask-err").hidden = false;
+    }
+  });
+
+  const link = location.origin + location.pathname + (via ? "?v=" + encodeURIComponent(via) : "");
+  $("b-share").href = "https://wa.me/?text=" + encodeURIComponent("Me ajuda em 1 minuto? É uma pesquisa rápida sobre a frase de um site novo: " + link);
+
+  chama({ acao: "estado" }).then(r => {
+    if (r.status !== 200) return mostra("s-fail");
+    if (!r.aberto) return mostra("s-closed");
+    fila = sorteia(r.frases || [], r.contagem);
+    if (!fila.length) return mostra("s-closed");
+    document.querySelectorAll(".choice").forEach(b => b.disabled = false);
+  }).catch(() => mostra("s-fail"));
+})();
+</script>
+</body>
+</html>
