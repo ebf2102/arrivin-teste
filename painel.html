@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Arrivin · Painel do teste</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap">
+<style>
+/* Layout: uma coluna para celular; contagens grandes no topo, quebras por frase, perfil e link abaixo. */
+:root{--bg:#F5F3EB;--fg:#102F38;--muted:#4F6870;--line:#D9D5C7;--card:#FFFFFF;--accent:#0F7A6B;--fill:#47C6B1;--track:#E7E3D6;
+  --font:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0B2128;--fg:#F5F3EB;--muted:#A9BCC0;--line:#24434C;--card:#12313A;--accent:#47C6B1;--fill:#47C6B1;--track:#1D3D46;color-scheme:dark}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font:15px/1.45 var(--font);font-variant-numeric:tabular-nums;
+  padding:max(20px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(24px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+main{max-width:560px;margin:0 auto;display:grid;gap:16px}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+h1{font-size:20px;margin:0}
+.muted{color:var(--muted)}.small{font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:12px}
+.big{display:flex;gap:24px;flex-wrap:wrap}
+.big div{display:grid}
+.big b{font-size:34px;line-height:1.1}
+.big span{font-size:13px;color:var(--muted)}
+.prog{position:relative;height:12px;border-radius:6px;background:var(--track);overflow:visible}
+.prog i{position:absolute;inset:0 auto 0 0;border-radius:6px;background:var(--fill)}
+.prog s{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--fg);opacity:.55}
+.prog-l{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+h2{font-size:14px;margin:0;letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:4px 10px;align-items:center}
+.row .lab{font-size:14px;min-width:0}
+.row .lab small{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .n{text-align:right;font-weight:700}
+.row .bar{grid-column:1/-1;height:6px;border-radius:3px;background:var(--track);overflow:hidden}
+.row .bar i{display:block;height:100%;background:var(--fill)}
+.pill{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px}
+.pill.on{background:#D7F2EC;color:#0B5A4F}.pill.off{background:#F3DCD9;color:#8A2A1F}
+@media (prefers-color-scheme:dark){.pill.on{background:#174A42;color:#BFEDE3}.pill.off{background:#4A2420;color:#F6CFC9}}
+button{font:600 14px var(--font);border:1px solid var(--line);background:var(--card);color:var(--fg);border-radius:10px;padding:10px 14px;cursor:pointer}
+.err{color:#B3261E}@media (prefers-color-scheme:dark){.err{color:#FFB4AB}}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Teste das frases</h1>
+    <span id="status" class="pill on">carregando…</span>
+  </header>
+
+  <p id="erro" class="err" hidden></p>
+
+  <section class="card" id="c-total">
+    <div class="big">
+      <div><b id="pessoas">–</b><span>pessoas</span></div>
+      <div><b id="respostas">–</b><span>respostas</span></div>
+      <div><b id="resta">–</b><span id="resta-l">para fechar</span></div>
+    </div>
+    <div class="prog" aria-hidden="true"><i id="prog"></i><s id="minimo"></s></div>
+    <div class="prog-l"><span>0</span><span id="min-l">mínimo 50</span><span id="meta-l">meta 100</span></div>
+  </section>
+
+  <section class="card">
+    <h2>Por frase</h2>
+    <div id="frases" style="display:grid;gap:12px"></div>
+    <p class="small muted">O ranking de qual frase é mais entendida sai na análise; aqui é só a quantidade de respostas.</p>
+  </section>
+
+  <section class="card">
+    <h2>Por perfil</h2>
+    <div id="perfis" style="display:grid;gap:12px"></div>
+  </section>
+
+  <section class="card">
+    <h2>Por link</h2>
+    <div id="vias" style="display:grid;gap:12px"></div>
+  </section>
+
+  <p class="small muted" id="atual">Atualiza sozinho a cada 30 segundos.</p>
+  <button id="b-agora" type="button">Atualizar agora</button>
+</main>
+<script>
+(() => {
+  const API = "https://tykpjrwnqlltzrmkpjva.supabase.co/functions/v1/teste-frases";
+  const chave = new URLSearchParams(location.search).get("k") || "";
+  const TEXTOS = {
+    B: "Hóspede registrado e conferido antes de chegar, sem você mandar uma mensagem.",
+    C: "Pare de pedir documento pelo WhatsApp. O hóspede se registra sozinho pelo link da reserva.",
+    F: "Sua equipe para de cobrar documento. O hóspede chega com o registro pronto.",
+    H: "Um link na mensagem da reserva. Hóspede registrado, conferido e liberado.",
+    J: "O hóspede chega com o cadastro conferido. Na portaria, é só confirmar e liberar.",
+    K: "10 ou 100 unidades: todo hóspede registrado e conferido antes do check-in.",
+    N: "Documento, rosto e acesso de cada hóspede, conferidos num só lugar.",
+    O: "Check-in de hóspedes sem WhatsApp, sem papel e sem espera."
+  };
+  const PERFIS = { anfitriao: "Anfitrião ou gestora", portaria: "Portaria ou síndico", fora: "Não trabalha com isso" };
+  const VIAS = { rose: "Rose", julia: "Júlia", elias: "Elias", outro: "Sem link marcado" };
+  const $ = id => document.getElementById(id);
+  const pes = n => n + (n === 1 ? " pessoa" : " pessoas");
+  const fmtHora = iso => new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+
+  function linhas(alvo, itens, max) {
+    const el = $(alvo); el.textContent = "";
+    for (const it of itens) {
+      const row = document.createElement("div"); row.className = "row";
+      const lab = document.createElement("div"); lab.className = "lab";
+      lab.textContent = it.nome;
+      if (it.sub) { const s = document.createElement("small"); s.textContent = it.sub; lab.appendChild(s); }
+      const n = document.createElement("div"); n.className = "n"; n.textContent = it.n;
+      const bar = document.createElement("div"); bar.className = "bar";
+      const i = document.createElement("i"); i.style.width = (max ? Math.round(it.n / max * 100) : 0) + "%"; bar.appendChild(i);
+      row.append(lab, n, bar); el.appendChild(row);
+    }
+  }
+
+  async function carrega() {
+    if (!chave) { $("erro").textContent = "Link sem a chave do painel. Use o link completo que o Claude enviou."; $("erro").hidden = false; return; }
+    try {
+      const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ acao: "resumo", chave }) });
+      if (r.status === 403) throw new Error("chave");
+      if (!r.ok) throw new Error("falha");
+      const d = await r.json();
+      $("erro").hidden = true;
+      $("pessoas").textContent = d.pessoas;
+      $("respostas").textContent = d.respostas;
+      const min = Math.round(d.meta / 2);
+      $("prog").style.width = Math.min(100, d.respostas / d.meta * 100) + "%";
+      $("minimo").style.left = (min / d.meta * 100) + "%";
+      $("min-l").textContent = "mínimo " + min; $("meta-l").textContent = "meta " + d.meta;
+      const st = $("status");
+      st.textContent = d.aberto ? "aberto até " + fmtHora(d.fecha_em) : "encerrado";
+      st.className = "pill " + (d.aberto ? "on" : "off");
+      const falta = Math.max(0, d.meta - d.respostas);
+      $("resta").textContent = d.aberto ? falta : "0";
+      $("resta-l").textContent = d.aberto ? "faltam para a meta" : "teste fechado";
+
+      const fr = d.frases_ativas.map(f => ({ nome: "Frase " + f, sub: TEXTOS[f] || "", n: d.por_frase[f] || 0 }));
+      linhas("frases", fr, Math.max(1, ...fr.map(x => x.n)));
+      const pf = Object.keys(PERFIS).map(k => ({ nome: PERFIS[k], sub: pes(d.pessoas_por_perfil[k] || 0), n: d.por_perfil[k] || 0 }));
+      linhas("perfis", pf, Math.max(1, ...pf.map(x => x.n)));
+      const vs = Object.keys(VIAS).filter(k => k === "rose" || k === "julia" || d.por_via[k])
+        .map(k => ({ nome: VIAS[k], sub: pes(d.pessoas_por_via[k] || 0), n: d.por_via[k] || 0 }));
+      linhas("vias", vs, Math.max(1, ...vs.map(x => x.n)));
+
+      $("atual").textContent = "Atualizado às " + fmtHora(d.agora) + (d.ultima_resposta ? " · última resposta " + fmtHora(d.ultima_resposta) : "") + ". Atualiza sozinho a cada 30 segundos.";
+    } catch (e) {
+      $("erro").textContent = e.message === "chave" ? "Chave do painel inválida. Use o link completo que o Claude enviou." : "Não foi possível atualizar agora. Tentando de novo em 30 segundos.";
+      $("erro").hidden = false;
+    }
+  }
+  $("b-agora").addEventListener("click", carrega);
+  carrega(); setInterval(carrega, 30000);
+})();
+</script>
+</body>
+</html>
