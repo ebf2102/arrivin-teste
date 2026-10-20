@@ -220,6 +220,16 @@ textarea{width:100%;min-height:120px;padding:14px;border-radius:12px;border:1.5p
   const link = location.origin + location.pathname + (via ? "?v=" + encodeURIComponent(via) : "");
   $("b-share").href = "https://wa.me/?text=" + encodeURIComponent("Me ajuda em 1 minuto? É uma pesquisa rápida sobre a frase de um site novo: " + link);
 
+  const ver = (new URLSearchParams(location.search).get("ver") || "").toUpperCase();
+  if (TEXTOS[ver]) {
+    // Prévia para o painel: mostra o topo com a frase, sem cronômetro e sem gravar nada.
+    $("hero-h").textContent = TEXTOS[ver];
+    $("bar").hidden = true;
+    $("count").textContent = "Prévia da frase " + ver + " · não conta como resposta";
+    $("app").hidden = true; $("hero").hidden = false;
+    return;
+  }
+
   chama({ acao: "estado" }).then(r => {
     if (r.status !== 200) return mostra("s-fail");
     if (!r.aberto) return mostra("s-closed");

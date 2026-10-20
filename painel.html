@@ -33,6 +33,11 @@ h2{font-size:14px;margin:0;letter-spacing:.04em;text-transform:uppercase;color:v
 .row{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:4px 10px;align-items:center}
 .row .lab{font-size:14px;min-width:0}
 .row .lab small{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row.frase{cursor:pointer}
+.row.frase.aberta .lab small{white-space:normal;overflow:visible;font-size:14px;color:var(--fg);margin-top:4px}
+.row .ver{display:none;font-size:13px;font-weight:600;color:var(--accent);margin-top:6px}
+.row.frase.aberta .ver{display:inline-block}
+.row .seta{color:var(--muted);font-size:12px;font-weight:400;margin-left:6px}
 .row .n{text-align:right;font-weight:700}
 .row .bar{grid-column:1/-1;height:6px;border-radius:3px;background:var(--track);overflow:hidden}
 .row .bar i{display:block;height:100%;background:var(--fill)}
@@ -98,6 +103,7 @@ button{font:600 14px var(--font);border:1px solid var(--line);background:var(--c
   const PERFIS = { anfitriao: "Anfitrião ou gestora", portaria: "Portaria ou síndico", fora: "Não trabalha com isso" };
   const VIAS = { rose: "Rose", julia: "Júlia", elias: "Elias", outro: "Sem link marcado" };
   const $ = id => document.getElementById(id);
+  const abertas = new Set();
   const pes = n => n + (n === 1 ? " pessoa" : " pessoas");
   const fmtHora = iso => new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 
@@ -108,6 +114,17 @@ button{font:600 14px var(--font);border:1px solid var(--line);background:var(--c
       const lab = document.createElement("div"); lab.className = "lab";
       lab.textContent = it.nome;
       if (it.sub) { const s = document.createElement("small"); s.textContent = it.sub; lab.appendChild(s); }
+      if (it.frase) {
+        row.classList.add("frase"); row.tabIndex = 0; row.setAttribute("role", "button");
+        if (abertas.has(it.frase)) row.classList.add("aberta");
+        const seta = document.createElement("span"); seta.className = "seta"; seta.textContent = abertas.has(it.frase) ? "toque para fechar" : "toque para ver";
+        lab.firstChild.after(seta);
+        const a = document.createElement("a"); a.className = "ver"; a.href = "./?ver=" + it.frase; a.target = "_blank"; a.rel = "noopener";
+        a.textContent = "Ver como aparece no teste ›"; a.addEventListener("click", e => e.stopPropagation()); lab.appendChild(a);
+        const alterna = () => { const on = row.classList.toggle("aberta"); on ? abertas.add(it.frase) : abertas.delete(it.frase); seta.textContent = on ? "toque para fechar" : "toque para ver"; };
+        row.addEventListener("click", alterna);
+        row.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); alterna(); } });
+      }
       const n = document.createElement("div"); n.className = "n"; n.textContent = it.n;
       const bar = document.createElement("div"); bar.className = "bar";
       const i = document.createElement("i"); i.style.width = (max ? Math.round(it.n / max * 100) : 0) + "%"; bar.appendChild(i);
@@ -136,7 +153,7 @@ button{font:600 14px var(--font);border:1px solid var(--line);background:var(--c
       $("resta").textContent = d.aberto ? falta : "0";
       $("resta-l").textContent = d.aberto ? "faltam para a meta" : "teste fechado";
 
-      const fr = d.frases_ativas.map(f => ({ nome: "Frase " + f, sub: TEXTOS[f] || "", n: d.por_frase[f] || 0 }));
+      const fr = d.frases_ativas.map(f => ({ nome: "Frase " + f, sub: TEXTOS[f] || "", n: d.por_frase[f] || 0, frase: f }));
       linhas("frases", fr, Math.max(1, ...fr.map(x => x.n)));
       const pf = Object.keys(PERFIS).map(k => ({ nome: PERFIS[k], sub: pes(d.pessoas_por_perfil[k] || 0), n: d.por_perfil[k] || 0 }));
       linhas("perfis", pf, Math.max(1, ...pf.map(x => x.n)));
